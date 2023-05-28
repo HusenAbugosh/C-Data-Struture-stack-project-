@@ -35,5 +35,11 @@
   ],
   "C_Cpp_Runner.useAddressSanitizer": false,
   "C_Cpp_Runner.showCompilationTime": false,
-  "C_Cpp.errorSquiggles": "disabled"
+  "C_Cpp.errorSquiggles": "disabled",
+  "files.associations": {
+    "functional": "c",
+    "string": "c",
+    "unordered_map": "c",
+    "vector": "c"
+  }
 }

@@ -231,7 +231,7 @@ int lineNum = 1;
 void readFile(){
 
 
-    printf("Hi, please enter the input file name: equations.txt\n");
+    printf("Hi, please enter the input file name: \n");
     scanf("%s", fileName);  //<-- get the input file name from the user.
 
     FILE *file = fopen(fileName, "r"); //<-- will open the wanted file & put it on the reading mode.
@@ -268,6 +268,56 @@ int arePair(char open , char close){
 }
 
 
+void RemoveDuplicates(Node* head) {
+
+
+    Node* current_node = head;
+    Node* next_node;
+    Node* temp;
+    int counter = 0;
+    while (current_node != NULL && current_node->next != NULL) {
+        next_node = current_node->next;
+
+        if (current_node->data == '-' &&  next_node->data == '-' ) {
+            temp = next_node;
+            current_node->next = next_node->next;
+            free(temp);
+        } else {
+            current_node = current_node->next;
+        }
+    }
+
+    display(head);
+}
+
+//in this function we will handle the minus case by addding zeros before the sign in some conditions:
+Node* formalize(Node* charList) {
+    Node* currentNode = charList;
+    Node* resultList = NULL;
+
+    // Check if the first character is a negative sign
+    if (currentNode != NULL && currentNode->data == '-') {
+        insert(&resultList, '0');
+    }
+
+    while (currentNode != NULL) {
+        char currentChar = currentNode->data;
+        char nextChar = (currentNode->next != NULL) ? currentNode->next->data : '\0';
+        char prevChar = (currentNode->prev != NULL) ? currentNode->prev->data : '\0';
+
+        if (currentChar == '-' && (!isdigit(prevChar) || prevChar == '\0') && !isdigit(nextChar)) {
+            insert(&resultList, currentChar);
+            insert(&resultList, '0');
+        } else {
+            insert(&resultList, currentChar);
+        }
+
+        currentNode = currentNode->next;
+    }
+    return resultList;
+}
+
+
 // if the char is one of these char(* / ^) will return 1 
 int isOperator(char c){
 
@@ -287,6 +337,8 @@ int isValid(Node* charList, int reason){
 
     insert(&charList,' '); //<-- to review each original characters
     // display(charList);
+
+    charList = formalize(charList);
 
     Node* currentNode = charList;
     Stack* stack1 = createStack(); //<-- to declear a stack.
@@ -516,6 +568,8 @@ and k is the number of digit of the int.
 */
 int Evaluate(Node* charList){
 
+
+    charList = formalize(charList);
     Node* prefixList = convert(charList); //<-- to get the prefix of the charList.
 
     // if the prefix conatin a null value that mean  we have invalid equation:
@@ -628,6 +682,7 @@ void lineByLine(int op){
     Node* result = NULL;
     int eResult;
 
+
     FILE *file = fopen(fileName, "r"); //<-- will open the wanted file and put on the reading mode.
     // this if-statment used to check if there any error with openning the file:
     if (file == NULL){
@@ -646,6 +701,8 @@ void lineByLine(int op){
         }
 
         if(character == '\n' ||  character == EOF){
+
+            // RemoveDuplicates(list);
 
             switch (op){
                 case 1:
@@ -689,11 +746,7 @@ void lineByLine(int op){
             i++;
         }
     }
-
 }
-
-
-
 
 
 int main(){
