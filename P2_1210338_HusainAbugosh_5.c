@@ -268,6 +268,16 @@ int arePair(char open , char close){
 }
 
 
+// if the char is one of these char(* / ^) will return 1 
+int isOperator(char c){
+
+    if(c == '*' || c == '/' || c == '^'){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
 
 /* isValid function : will get a list(infix notaion) as parmeter then return 1(true)
 if its Valid or 0(flase) and why its inValid 
@@ -301,7 +311,7 @@ int isValid(Node* charList, int reason){
             }
             return 0; //<-- that mean invaild in the opertaion.
 
-        }else if((currentChar == '+' || currentChar == '-') && (nextChar == '*' || nextChar == '/')){
+        }else if((currentChar == '+' || currentChar == '-' || isOperator(currentChar)) && isOperator(nextChar) ){
             if(reason == 1){
               printf("Invalid: can not be %c %c after each other!\n",currentChar,nextChar);
             }
@@ -356,15 +366,6 @@ int priority(char c){
     }
 }
 
-// if the char is one of these char(* / ^) will return 1 
-int isOperator(char c){
-
-    if(c == '*' || c == '/' || c == '^'){
-        return 1;
-    }else{
-        return 0;
-    }
-}
 
 /* Convert function: will take a likecList(CharList) thats conatain a infix notation 
  and will return a newList(output) that will contain the prefix notation
@@ -574,6 +575,46 @@ int Evaluate(Node* charList){
 }
 
 
+void printResult(Node* charList) {
+
+    FILE *file;  
+    file = fopen("output.txt", "a"); //<-- open the file in the append mode.
+    
+    // cheacking if there any issue with opening the file:
+    if (file == NULL) {
+        printf("Error opening the file.\n");
+    }
+    // to track the postion of the node:
+    Node *currentNode1 = charList;
+
+    // print the list
+    while (currentNode1 != NULL){
+      fprintf(file, "%c", currentNode1->data);
+      currentNode1 = currentNode1->next;
+    }
+
+    fprintf(file, "\n"); //<--  print anew line in file to orgnaize it.
+    char* str1 = "~VALID";
+    char* str2 = "~inValid";
+    char* str3 = "the Value: ";
+
+    if(isValid(charList,0) == 0){
+       
+       fprintf(file, "%s", str2);//<--  print is not valid
+       fprintf(file, "\n"); //<--  print anew line in file to orgnaize it.
+    }else{
+       fprintf(file, "%s", str1);//<--  print is not valid
+       fprintf(file, "\n"); //<--  print anew line in file to orgnaize it.
+       fprintf(file, "%s", str3);
+       fprintf(file, "%d",Evaluate(charList)); //<--  print anew line in file to orgnaize it.
+    }
+
+     fprintf(file, "\n\n");
+     fclose(file); //<-- close the file
+
+}
+
+
 /*lineByLine function : will read the target file then do:
 1) read each equation then insert it in a list .
 2) do the operation depending on the parameter on each equation.
@@ -602,10 +643,6 @@ void lineByLine(int op){
         if (character != EOF) {
 
             insert(&list, character);
-            //the int who have more than one digit we
-            // if(!isdigit(character)){
-            //   insert(&list, ' ');
-            // }
         }
 
         if(character == '\n' ||  character == EOF){
@@ -638,8 +675,14 @@ void lineByLine(int op){
                     display(list);
                     deleteList(&result);
                 }
-                default:
+                case 5:
+                     // to print all deatils in output file:
+                    printResult(list);
                     break;
+
+                default:
+                break;
+                    
             }
 
             deleteList(&list);
@@ -658,6 +701,7 @@ int main(){
 
     int choice;              //<-- will store the choice of the user.
     int exitFlag = 0;        //<-- if the user rise the flag(exitFlag = 1) th loop will stop and close the programe.
+    int didRead = 0;         //<-- the user shoud first choice th first choice to can select the operation.
     printf("breakpoint");
     //  this loop use for showing the menu:
     while (!exitFlag){
@@ -678,26 +722,61 @@ int main(){
             case 1:
                 printf("\n");
                 readFile();
+                didRead = 1;
                 break;
             case 2:
                 printf("\n");
+                if(didRead == 0){
+                readFile();
+                didRead = 1;
+                printf("\n");
+                }
                 lineByLine(1);
                 break;
             case 3:
                 printf("\n");
+                if(didRead == 0){
+                readFile();
+                didRead = 1;
+                printf("\n");
+                }
                 lineByLine(2);
                 break;
             case 4:
-                 printf("\n");
-                 lineByLine(3);
+                printf("\n");
+                if(didRead == 0){
+                readFile();
+                didRead = 1;
+                printf("\n");
+                }
+                lineByLine(3);
                 break;
             case 5:
                 printf("\n");
+                if(didRead == 0){
+                readFile();
+                didRead = 1;
+                printf("\n");
+                }
                 lineByLine(4);
                 break;
             case 6:
+                printf("\n");
+                if(didRead == 0){
+                readFile();
+                didRead = 1;
+                printf("\n");
+                }
+                lineByLine(5);
+                printf("Printing is done :) \n");
                 break;
             case 7:
+                // exit
+                exitFlag = 1;
+                printf("Exiting the program...\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
                 break;
         }
         printf("\n");
